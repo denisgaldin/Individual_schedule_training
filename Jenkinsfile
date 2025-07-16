@@ -6,9 +6,28 @@ pipeline {
         CLUB_GUID = credentials('xfit_club_guid')
         HALL_GUID = credentials('xfit_hall_guid')
         SUBSCRIPTION_GUID = credentials('xfit_subscription_guid')
+        PHONE_NUMBER = credentials('xfit_phone_number') // если есть
+        SMS_CODE = credentials('xfit_sms_code')         // если есть
+        SMS_TOKEN = credentials('xfit_sms_token')       // если есть
     }
 
     stages {
+
+        stage('🚨 ВРЕМЕННО: Вывод переменных для восстановления .env') {
+            steps {
+                script {
+                    // ВНИМАНИЕ! УДАЛИ ЭТО ПОСЛЕ ВОССТАНОВЛЕНИЯ .env
+                    echo "BASE_URL=$BASE_URL"
+                    echo "CLUB_GUID=$CLUB_GUID"
+                    echo "HALL_GUID=$HALL_GUID"
+                    echo "SUBSCRIPTION_GUID=$SUBSCRIPTION_GUID"
+                    echo "PHONE_NUMBER=$PHONE_NUMBER"
+                    echo "SMS_CODE=$SMS_CODE"
+                    echo "SMS_TOKEN=$SMS_TOKEN"
+                }
+            }
+        }
+
         stage('Checkout') {
             steps {
                 echo '🔄 Получаем код из репозитория'
@@ -22,20 +41,17 @@ pipeline {
                 sh '''
                     python3 -m venv .venv
                     . .venv/bin/activate
-
-                    pip install --upgrade pip
                     pip install -r requirements.txt
 
-                    echo "BASE_URL=$BASE_URL" > .env
-                    echo "CLUB_GUID=$CLUB_GUID" >> .env
-                    echo "HALL_GUID=$HALL_GUID" >> .env
-                    echo "SUBSCRIPTION_GUID=$SUBSCRIPTION_GUID" >> .env
+                    echo BASE_URL=$BASE_URL > .env
+                    echo CLUB_GUID=$CLUB_GUID >> .env
+                    echo HALL_GUID=$HALL_GUID >> .env
+                    echo SUBSCRIPTION_GUID=$SUBSCRIPTION_GUID >> .env
+                    echo PHONE_NUMBER=$PHONE_NUMBER >> .env
+                    echo SMS_CODE=$SMS_CODE >> .env
+                    echo SMS_TOKEN=$SMS_TOKEN >> .env
 
-                    echo '🧹 Очистка прошлых результатов Allure'
-                    rm -rf allure-results
-
-                    echo '🚀 Запуск pytest с выводом и allure'
-                    pytest tests/ --alluredir=allure-results --disable-warnings --maxfail=1 -v
+                    pytest tests/ --disable-warnings -v
                 '''
             }
         }
@@ -43,28 +59,15 @@ pipeline {
         stage('Allure Report') {
             steps {
                 echo '📊 Генерация Allure отчета'
-                allure([
-                    includeProperties: false,
-                    jdk: '',
-                    reportBuildPolicy: 'ALWAYS',
-                    results: [[path: 'allure-results']]
-                ])
+                allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
             }
         }
     }
 
     post {
         always {
-            script {
-                echo '🧹 Очистка окружения и .venv'
-                node {
-                    sh 'rm -rf .venv'
-                }
-            }
-        }
-
-        failure {
-            echo '❌ Сборка упала. Проверь ошибки в логах'
+            echo '🧹 Очистка окружения'
+            sh 'rm -rf .venv'
         }
     }
 }
