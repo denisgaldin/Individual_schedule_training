@@ -18,9 +18,6 @@ pipeline {
                     echo "CLUB_GUID=$CLUB_GUID"
                     echo "HALL_GUID=$HALL_GUID"
                     echo "SUBSCRIPTION_GUID=$SUBSCRIPTION_GUID"
-                    echo "PHONE_NUMBER=$PHONE_NUMBER"
-                    echo "SMS_CODE=$SMS_CODE"
-                    echo "SMS_TOKEN=$SMS_TOKEN"
                 }
             }
         }
