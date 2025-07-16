@@ -41,9 +41,6 @@ pipeline {
                     echo CLUB_GUID=$CLUB_GUID >> .env
                     echo HALL_GUID=$HALL_GUID >> .env
                     echo SUBSCRIPTION_GUID=$SUBSCRIPTION_GUID >> .env
-                    echo PHONE_NUMBER=$PHONE_NUMBER >> .env
-                    echo SMS_CODE=$SMS_CODE >> .env
-                    echo SMS_TOKEN=$SMS_TOKEN >> .env
 
                     pytest tests/ --disable-warnings -v
                 '''
