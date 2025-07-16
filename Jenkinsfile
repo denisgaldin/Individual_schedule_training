@@ -2,7 +2,10 @@ pipeline {
     agent any
 
     environment {
-        BASE_URL = credentials('xfit_base_url') //
+        BASE_URL = credentials('xfit_base_url')
+        CLUB_GUID = credentials('xfit_club_guid')
+        HALL_GUID = credentials('xfit_hall_guid')
+        SUBSCRIPTION_GUID = credentials('xfit_subscription_guid')
     }
 
     stages {
@@ -17,16 +20,17 @@ pipeline {
             steps {
                 echo '🐍 Установка зависимостей и запуск тестов'
                 sh '''
-                    # Создаем виртуальное окружение
                     python3 -m venv .venv
                     . .venv/bin/activate
 
-                    # Обновляем pip и устанавливаем зависимости
                     pip install --upgrade pip
                     pip install -r requirements.txt
 
-                    # Перезаписываем .env с Jenkins BASE_URL
+                    # Записываем все переменные в .env
                     echo "BASE_URL=$BASE_URL" > .env
+                    echo "CLUB_GUID=$CLUB_GUID" >> .env
+                    echo "HALL_GUID=$HALL_GUID" >> .env
+                    echo "SUBSCRIPTION_GUID=$SUBSCRIPTION_GUID" >> .env
 
                     echo '🧹 Очистка прошлых результатов Allure'
                     rm -rf allure-results
