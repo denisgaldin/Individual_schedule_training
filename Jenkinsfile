@@ -26,7 +26,6 @@ pipeline {
                     pip install --upgrade pip
                     pip install -r requirements.txt
 
-                    # Записываем все переменные в .env
                     echo "BASE_URL=$BASE_URL" > .env
                     echo "CLUB_GUID=$CLUB_GUID" >> .env
                     echo "HALL_GUID=$HALL_GUID" >> .env
@@ -56,8 +55,12 @@ pipeline {
 
     post {
         always {
-            echo '🧹 Очистка окружения и .venv'
-            sh 'rm -rf .venv'
+            script {
+                echo '🧹 Очистка окружения и .venv'
+                node {
+                    sh 'rm -rf .venv'
+                }
+            }
         }
 
         failure {
