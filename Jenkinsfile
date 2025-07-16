@@ -6,9 +6,6 @@ pipeline {
         CLUB_GUID = credentials('xfit_club_guid')
         HALL_GUID = credentials('xfit_hall_guid')
         SUBSCRIPTION_GUID = credentials('xfit_subscription_guid')
-        PHONE_NUMBER = credentials('xfit_phone_number') // если есть
-        SMS_CODE = credentials('xfit_sms_code')         // если есть
-        SMS_TOKEN = credentials('xfit_sms_token')       // если есть
     }
 
     stages {
